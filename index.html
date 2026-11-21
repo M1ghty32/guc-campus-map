@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#11665b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>吉利学院 · 校园实景采集</title>
+  <link rel="apple-touch-icon" href="assets/touch.png">
+  <link rel="icon" href="assets/touch.png">
+  <link rel="manifest" href="app.webmanifest">
+  <link rel="stylesheet" href="style.css">
+  <script src="jszip.min.js" defer></script>
+  <script src="github-sync.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="bar"><div class="bar-inner">
+    <div class="brand"><span class="brandmark" data-icon="layers"></span><div><strong>校园实景采集</strong><span>吉利学院 · 成都校区</span></div></div>
+    <nav aria-label="主导航">
+      <button id="map-tab" aria-current="page"><i data-icon="map"></i>采集地图</button>
+      <button id="journal-tab"><i data-icon="book-open"></i>采集记录 <b id="nav-count">0</b></button>
+    </nav>
+  </div></header>
+  <main>
+    <section id="field">
+      <div class="section-head"><h1>校园采集地图</h1>
+        <button id="gps" class="light"><i data-icon="locate-fixed"></i><span>开启定位</span></button></div>
+      <div class="workspace">
+        <div class="map-panel">
+          <div id="map-area">
+            <div id="map-scroll"><div id="plane">
+              <img id="campus-image" src="assets/campus.webp" alt="吉利学院成都校区 v16 鸟瞰模型" draggable="false">
+              <div id="markers"></div><div id="gps-dot" hidden title="手机站位（估算）"></div>
+            </div></div>
+            <div class="map-compass" title="图上方为北"><i data-icon="navigation"></i><b>N</b></div>
+            <div class="zoom-tools">
+              <button id="zoom-in" aria-label="放大地图" title="放大地图"><i data-icon="plus"></i></button>
+              <button id="zoom-out" aria-label="缩小地图" title="缩小地图"><i data-icon="minus"></i></button>
+              <button id="reset-map" aria-label="全校视图" title="全校视图"><i data-icon="maximize"></i></button>
+            </div>
+          </div>
+          <div class="map-footer"><span><i data-icon="layers"></i> 校园模型 <b>V16</b></span><span id="geo-status" role="status">定位未开启</span></div>
+        </div>
+        <section class="capture">
+          <div class="kicker"><span></span> 当前采集地点</div>
+          <button id="pick" title="选择或搜索采集点"><div class="site-title"><h2 id="site-name">图书馆</h2><span id="site-group">教学与文化</span></div><i data-icon="chevron-down"></i></button>
+          <div class="ref"><img id="detail-image" src="assets/library.webp" alt="当前地点模型参考"><span><i data-icon="layers"></i> 模型参考</span></div>
+          <fieldset><legend>取景部位</legend><div id="angles" class="chips"></div></fieldset>
+          <label class="photo-label">照片名称<input id="photo-name" maxlength="70" placeholder="例如：青春馆西门台阶" autocomplete="off"></label>
+          <details><summary><i data-icon="notebook-pen"></i> 现场备注与朝向 <i data-icon="chevron-down"></i></summary>
+            <label>镜头朝向<select id="direction"></select></label>
+            <label>现场备注<textarea id="notes" rows="2" maxlength="600" placeholder="如：西侧入口外有三级台阶"></textarea></label>
+          </details>
+          <div class="shoot-row"><button class="primary" id="shoot" disabled><i data-icon="camera"></i>拍摄实景</button><button id="import" class="square light" aria-label="从相册导入" title="从相册导入" disabled><i data-icon="images"></i></button></div>
+          <button id="capture-git" class="plain git-open"><i data-icon="archive"></i><span>连接 GitHub</span></button>
+          <span id="capture-status" role="status" class="local-info"></span>
+          <input type="file" id="camera-file" accept="image/*" capture="environment" hidden>
+          <input type="file" id="album-file" accept="image/*,.heic,.heif" multiple hidden>
+        </section>
+      </div>
+      <div class="point-heading"><h2>重点补拍地点</h2><button id="all-places" class="plain"><i data-icon="search"></i>全部地点</button></div>
+      <div id="suggestions"></div>
+    </section>
+    <section id="journal" hidden>
+      <div class="section-head"><h1>采集记录</h1><button id="export" class="primary" disabled><i data-icon="download"></i>导出素材包</button></div>
+      <div class="log-filters"><div><b id="log-count">0</b> 张照片 · 本机记录</div><select aria-label="筛选采集地点" id="log-filter"></select></div>
+      <div class="git-actions"><button class="light git-open"><i data-icon="archive"></i><span>连接 GitHub</span></button><button id="sync-all" class="primary" disabled>上传待同步照片</button></div>
+      <div id="logs"></div>
+    </section>
+  </main>
+  <dialog id="picker"><div class="dialog-head"><h2>选择采集地点</h2><button class="iconbtn close" aria-label="关闭"><i data-icon="x"></i></button></div>
+    <label class="search"><i data-icon="search"></i><input id="query" type="search" placeholder="搜索楼名、楼号或广场" autocomplete="off"></label>
+    <div id="place-list"></div>
+  </dialog>
+  <dialog id="editor"><div class="dialog-head"><h2>照片详情</h2><button class="iconbtn close" aria-label="关闭"><i data-icon="x"></i></button></div>
+    <img id="edit-img" alt="采集的实景照片"><p id="edit-meta"></p>
+    <label class="photo-label">照片名称<input id="edit-name" maxlength="70" autocomplete="off"></label>
+    <label>地点<select id="edit-place"></select></label><label>取景部位<select id="edit-angle"></select></label>
+    <label>镜头朝向<select id="edit-dir"></select></label><label>现场备注<textarea rows="2" id="edit-note" maxlength="600"></textarea></label>
+    <div class="editor-actions"><button id="remove" class="light"><i data-icon="trash-2"></i>删除</button><button id="save-edit" class="primary"><i data-icon="check"></i>保存</button></div>
+  </dialog>
+  <dialog id="git-dialog"><div class="dialog-head"><h2>连接 GitHub</h2><button class="iconbtn close" aria-label="关闭"><i data-icon="x"></i></button></div>
+    <p><a href="https://github.com/M1ghty32/guc-campus-fieldbook" target="_blank" rel="noopener noreferrer">M1ghty32/guc-campus-fieldbook</a></p>
+    <div id="auth-fields"><p class="git-help">选择这个私有仓库，将 Contents 设为 Read and write。令牌仅在当前页面会话使用。</p>
+      <a href="https://github.com/settings/personal-access-tokens/new?name=Campus%20Fieldbook&amp;target_name=M1ghty32&amp;contents=write" target="_blank" rel="noopener noreferrer">在 GitHub 创建限定仓库的令牌</a>
+      <label class="photo-label">细粒度令牌<input id="git-token" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="github_pat_…"></label>
+    </div>
+    <label class="git-toggle"><input type="checkbox" id="auto-sync" checked> 拍摄或导入后自动上传原图和采集信息</label>
+    <p id="git-message" role="status" class="git-help"></p>
+    <button id="connect-git" class="primary">连接</button><button id="disconnect-git" class="light" hidden>断开连接</button>
+  </dialog>
+  <dialog id="exporter"><div class="dialog-head"><h2>导出素材包</h2><button class="iconbtn close" aria-label="关闭"><i data-icon="x"></i></button></div>
+    <p id="export-info"></p><div id="bundles"></div><p class="local-info">ZIP 内含照片原文件、楼栋索引、站位和备注。</p>
+  </dialog>
+  <div id="notice" role="status" aria-live="polite" hidden></div>
+</body></html>
